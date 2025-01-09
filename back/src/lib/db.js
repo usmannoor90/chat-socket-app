@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect("mongodb://localhost:27017/", {
+    const conn = await mongoose.connect(process.env.MONGO_DB, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       maxPoolSize: 10, // Default is 5, increase for scalability

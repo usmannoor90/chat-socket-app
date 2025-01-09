@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import createError from "http-errors";
 import User from "../models/User.js";
+import { generateToken, verifyToken } from "../lib/utils.js";
 
 class AuthController {
   // Validate token
@@ -12,7 +13,8 @@ class AuthController {
         throw createError(401, "No token provided");
       }
 
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const decoded = verifyToken(token);
+
       const user = await User.findById(decoded.userId).select("-password");
 
       if (!user) {
@@ -43,16 +45,12 @@ class AuthController {
       if (!user) {
         throw createError(401, "Invalid credentials");
       }
-
       const isPasswordValid = await user.comparePassword(password);
 
       if (!isPasswordValid) {
         throw createError(401, "Invalid credentials");
       }
-
-      const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-        expiresIn: "24h",
-      });
+      const token = await generateToken(user._id);
 
       res.json({
         token,
@@ -90,9 +88,7 @@ class AuthController {
 
       await user.save();
 
-      const token = jwt.sign({ userId: user._id }, "process.env.JWT_SECRET", {
-        expiresIn: "24h",
-      });
+      const token = await generateToken(user._id);
 
       console.log({
         token,

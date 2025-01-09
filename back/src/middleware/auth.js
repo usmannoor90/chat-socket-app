@@ -1,5 +1,5 @@
-import jwt from "jsonwebtoken";
 import createError from "http-errors";
+import { verifyToken } from "../lib/utils";
 
 const authMiddleware = async (req, res, next) => {
   try {
@@ -9,7 +9,8 @@ const authMiddleware = async (req, res, next) => {
       throw createError(401, "Authentication required");
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = verifyToken(token);
+
     req.userId = decoded.userId;
     next();
   } catch (error) {
