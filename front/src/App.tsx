@@ -22,6 +22,7 @@ import NotFound from "@/pages/NotFound";
 // Context
 import { AuthProvider, useAuth } from "@/context/AuthContext";
 import { SocketProvider } from "@/context/SocketContext";
+import StartChat from "./pages/StartChat";
 
 // Guards
 const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
@@ -45,7 +46,7 @@ function AppContent() {
 
   useEffect(() => {
     if (isAuthenticated && user) {
-      const newSocket = io("http://localhost:3001", {
+      const newSocket = io(`http://localhost:8000/`, {
         auth: {
           token: localStorage.getItem("token"),
         },
@@ -110,9 +111,8 @@ function AppContent() {
               </PrivateRoute>
             }
           >
-            <Route path="/chat" element={<Chat />}>
-              <Route path=":roomId" element={<Chat />} />
-            </Route>
+            <Route path="/" element={<StartChat />} />
+            <Route path="/chat/:roomId" element={<Chat />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/settings" element={<Settings />} />
           </Route>
