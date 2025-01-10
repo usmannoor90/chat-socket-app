@@ -2,12 +2,6 @@ import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 
 const userSchema = new mongoose.Schema({
-  id: {
-    type: String,
-    required: true,
-    unique: true,
-    default: () => `user_${new Date().getTime()}`, // Generate unique string ID
-  },
   username: {
     type: String,
     required: true,

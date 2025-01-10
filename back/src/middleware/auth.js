@@ -1,5 +1,5 @@
 import createError from "http-errors";
-import { verifyToken } from "../lib/utils";
+import { verifyToken } from "../lib/utils.js";
 
 const authMiddleware = async (req, res, next) => {
   try {

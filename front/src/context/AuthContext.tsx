@@ -1,3 +1,4 @@
+import { AuthAPI } from "@/AxiosInstance/AuthApiLayer";
 import {
   createContext,
   useContext,
@@ -7,7 +8,7 @@ import {
 } from "react";
 
 // Types
-interface User {
+export interface User {
   id: string;
   username: string;
   email: string;
@@ -15,7 +16,7 @@ interface User {
   status: "online" | "offline" | "away" | "busy";
 }
 
-interface AuthContextType {
+export interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   loading: boolean;
@@ -24,12 +25,12 @@ interface AuthContextType {
   register: (data: RegisterData) => Promise<boolean>;
 }
 
-interface LoginCredentials {
-  username: string;
+export interface LoginCredentials {
+  email: string;
   password: string;
 }
 
-interface RegisterData {
+export interface RegisterData {
   username: string;
   email: string;
   password: string;
@@ -45,10 +46,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check for stored auth token on mount
     const token = localStorage.getItem("token");
     if (token) {
-      // Validate token and fetch user data
       validateToken(token);
     } else {
       setLoading(false);
@@ -57,21 +56,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const validateToken = async (token: string) => {
     try {
-      const response = await fetch(`${process.env.VITE_API_URL}auth/validate`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        const userData = await response.json();
-        setUser(userData);
-        setIsAuthenticated(true);
-      } else {
-        localStorage.removeItem("token");
-      }
+      const userData = await AuthAPI.validate(token);
+      setUser(userData);
+      setIsAuthenticated(true);
     } catch (error) {
-      console.log("Auth validation error:", error);
+      console.error("Auth validation error:", error);
       localStorage.removeItem("token");
     } finally {
       setLoading(false);
@@ -80,52 +69,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const login = async (credentials: LoginCredentials) => {
     try {
-      const response = await fetch(`${process.env.VITE_API_URL}auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(credentials),
-      });
-
-      if (response.ok) {
-        const { token, user } = await response.json();
-        localStorage.setItem("token", token);
-        setUser(user);
-        setIsAuthenticated(true);
-        return true;
-      }
-      return false;
+      const { token, user } = await AuthAPI.login(credentials);
+      localStorage.setItem("token", token);
+      setUser(user);
+      setIsAuthenticated(true);
+      return true;
     } catch (error) {
-      console.log("Login error:", error);
+      console.error("Login error:", error);
       return false;
     }
   };
 
   const register = async (data: RegisterData): Promise<boolean> => {
     try {
-      const response = await fetch(`${process.env.VITE_API_URL}auth/register`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-      console.log("respose", response);
-
-      if (response.ok) {
-        const { token, user } = await response.json();
-
-        console.log(token, user);
-
-        localStorage.setItem("token", token);
-        setUser(user);
-        setIsAuthenticated(true);
-        return true;
-      }
-      return false;
+      const { token, user } = await AuthAPI.register(data);
+      localStorage.setItem("token", token);
+      setUser(user);
+      setIsAuthenticated(true);
+      return true;
     } catch (error) {
-      console.log("Registration error:", error);
+      console.error("Registration error:", error);
       return false;
     }
   };
@@ -151,7 +114,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     </AuthContext.Provider>
   );
 };
-
 // Custom hook with type safety
 export const useAuth = () => {
   const context = useContext(AuthContext);

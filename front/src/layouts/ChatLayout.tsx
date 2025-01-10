@@ -1,15 +1,16 @@
-// layouts/AuthLayout.tsx
+// layouts/ChatLayout.tsx
 import { Outlet } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 
-const AuthLayout = () => {
+const ChatLayout = () => {
   return (
     <div className="min-h-screen flex items-center w-full justify-center bg-slate-100 dark:bg-red-600">
-      <Card className="w-full max-w-md p-6 space-y-6 shadow-lg">
+      <Card className="w-full max-w-md h-screen p-6 space-y-6 shadow-lg"></Card>
+      <div className="w-full  ">
         <Outlet />
-      </Card>
+      </div>
     </div>
   );
 };
 
-export default AuthLayout;
+export default ChatLayout;

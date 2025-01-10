@@ -102,6 +102,7 @@ function AppContent() {
           </Route>
 
           {/* Protected Routes */}
+
           <Route
             element={
               <PrivateRoute>

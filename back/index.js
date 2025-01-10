@@ -4,12 +4,12 @@ import dotenv from "dotenv";
 import authRoutes from "./src/routes/auth.js";
 import connectDB from "./src/lib/db.js";
 // import cookieParser from "cookie-parser";
-import { app, server } from "./lib/socket.js";
+import { app, server } from "./src/lib/socket.js";
 
 dotenv.config();
 
-const port = process.env.PORT || 8000;
-const app = express();
+const port = process.env.PORT || 5000;
+// const app = express();
 
 // Middleware
 app.use(express.json());

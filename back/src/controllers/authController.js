@@ -1,7 +1,7 @@
-import jwt from "jsonwebtoken";
 import createError from "http-errors";
 import User from "../models/User.js";
 import { generateToken, verifyToken } from "../lib/utils.js";
+import mongoose from "mongoose";
 
 class AuthController {
   // Validate token
@@ -13,9 +13,11 @@ class AuthController {
         throw createError(401, "No token provided");
       }
 
-      const decoded = verifyToken(token);
+      const decoded = await verifyToken(token);
 
-      const user = await User.findById(decoded.userId).select("-password");
+      const user = await User.findOne({
+        _id: new mongoose.Types.ObjectId(decoded.userId),
+      });
 
       if (!user) {
         throw createError(404, "User not found");
@@ -35,6 +37,8 @@ class AuthController {
   static async login(req, res, next) {
     try {
       const { email, password } = req.body;
+
+      console.log(req.body);
 
       if (!email || !password) {
         throw createError(400, "Email and password are required");
