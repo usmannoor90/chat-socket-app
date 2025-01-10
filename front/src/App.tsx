@@ -34,7 +34,7 @@ const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
 const PublicRoute = ({ children }: { children: React.ReactNode }) => {
   const authContext = useAuth();
   const isAuthenticated = authContext ? authContext.isAuthenticated : false;
-  return !isAuthenticated ? children : <Navigate to="/chat" />;
+  return !isAuthenticated ? children : <Navigate to="/" />;
 };
 
 function AppContent() {
@@ -120,9 +120,7 @@ function AppContent() {
           {/* Redirect root to chat or login */}
           <Route
             path="/"
-            element={
-              <Navigate to={isAuthenticated ? "/chat" : "/login"} replace />
-            }
+            element={<Navigate to={isAuthenticated ? "/" : "/login"} replace />}
           />
 
           {/* 404 Route */}

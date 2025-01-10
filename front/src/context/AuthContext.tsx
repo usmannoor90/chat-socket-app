@@ -36,6 +36,7 @@ export interface RegisterData {
   password: string;
   displayName?: string;
   avatar?: string;
+  phoneNumber?: string;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);

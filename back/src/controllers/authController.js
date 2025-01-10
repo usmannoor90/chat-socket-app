@@ -58,11 +58,7 @@ class AuthController {
 
       res.json({
         token,
-        user: {
-          id: user._id,
-          email: user.email,
-          name: user.name,
-        },
+        user: user,
       });
     } catch (error) {
       next(error);
@@ -72,9 +68,9 @@ class AuthController {
   // Register new user
   static async register(req, res, next) {
     try {
-      const { email, password, username } = req.body;
+      const { email, password, username, phoneNumber } = req.body;
 
-      if (!email || !password || !username) {
+      if (!email || !password || !username || !phoneNumber) {
         throw createError(400, "All fields are required");
       }
       const existingUser = await User.findOne({ email });
@@ -88,6 +84,7 @@ class AuthController {
         passwordHash: password,
         username,
         displayName: username,
+        phoneNumber: phoneNumber,
       });
 
       await user.save();

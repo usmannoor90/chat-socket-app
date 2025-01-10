@@ -35,7 +35,7 @@ const Login = () => {
     try {
       const success = await login(formData);
       if (success) {
-        navigate("/chat");
+        navigate("/");
       } else {
         toast({
           variant: "destructive",

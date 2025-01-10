@@ -10,6 +10,7 @@ import { useAuth } from "@/context/AuthContext"; // Ensure this path matches you
 interface RegisterFormData {
   username: string;
   email: string;
+  number: string;
   password: string;
   confirmPassword: string;
 }
@@ -18,6 +19,7 @@ const Register = () => {
   const [formData, setFormData] = useState<RegisterFormData>({
     username: "",
     email: "",
+    number: "",
     password: "",
     confirmPassword: "",
   });
@@ -49,6 +51,7 @@ const Register = () => {
         username: formData.username,
         email: formData.email,
         password: formData.password,
+        phoneNumber: formData.number,
       });
 
       if (success) {
@@ -106,6 +109,19 @@ const Register = () => {
             value={formData.email}
             onChange={(e) =>
               setFormData({ ...formData, email: e.target.value })
+            }
+            required
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="number">Number</Label>
+          <Input
+            id="number"
+            type="number"
+            placeholder="651656651616"
+            value={formData.number}
+            onChange={(e) =>
+              setFormData({ ...formData, number: e.target.value })
             }
             required
           />
