@@ -56,16 +56,31 @@ const UserMessageCard = ({
 
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between">
-          <h3 className="font-semibold text-white group-hover:text-gray-900  truncate">
+          <h3
+            className={cn(
+              "font-semibold text-white group-hover:text-gray-900  ",
+              isSelected !== "" && isSelected === user._id && "text-gray-900"
+            )}
+          >
             {user.username}
           </h3>
-          <span className="text-xs text-white group-hover:text-gray-500">
+          <span
+            className={cn(
+              "text-xs text-white group-hover:text-gray-500",
+              isSelected !== "" && isSelected === user._id && "text-gray-500"
+            )}
+          >
             {user.meta.lastActive}
           </span>
         </div>
 
         <div className="flex items-center justify-between mt-1">
-          <p className="text-sm text-white group-hover:text-gray-600 truncate max-w-[70%]">
+          <p
+            className={cn(
+              "text-sm text-white group-hover:text-gray-600 truncate max-w-[70%]",
+              isSelected !== "" && isSelected === user._id && "text-gray-600"
+            )}
+          >
             {user.profile.statusMessage}
           </p>
           {/* <div className="flex items-center gap-2">

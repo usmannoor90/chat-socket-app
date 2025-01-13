@@ -23,7 +23,7 @@ class AuthController {
         throw createError(404, "User not found");
       }
 
-      res.json({ user });
+      res.json(user);
     } catch (error) {
       next(
         error.name === "JsonWebTokenError"
@@ -91,22 +91,9 @@ class AuthController {
 
       const token = await generateToken(user._id);
 
-      console.log({
-        token,
-        user: {
-          id: user._id,
-          email: user.email,
-          name: user.name,
-        },
-      });
-
       res.status(201).json({
         token,
-        user: {
-          id: user._id,
-          email: user.email,
-          name: user.name,
-        },
+        user: user,
       });
     } catch (error) {
       next(error);

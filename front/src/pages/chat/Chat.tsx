@@ -11,6 +11,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { useAuth } from "@/context/AuthContext";
 
 interface Message {
   id: string;
@@ -21,7 +22,10 @@ interface Message {
 }
 
 const Chat = () => {
-  const { roomId: recipientId } = useParams();
+  const { roomId: recipientId } = useParams<{ roomId: string }>();
+  const authContext = useAuth();
+
+  const senderId = authContext?.user?._id;
 
   const socket = useSocket();
   const [messages, setMessages] = useState<Message[]>([]);
@@ -34,7 +38,7 @@ const Chat = () => {
     if (socket && recipientId) {
       socket.emit(
         "getChatHistory",
-        { userId: "CURRENT_USER_ID", recipientId },
+        { userId: senderId, recipientId },
         (response: { status: string; messages: Message[] }) => {
           if (response.status === "success") {
             setMessages(response.messages);
@@ -44,14 +48,13 @@ const Chat = () => {
         }
       );
     }
-  }, [socket, recipientId]);
+  }, [socket, recipientId, senderId]);
 
   // Listen for incoming real-time messages
   useEffect(() => {
     if (socket) {
       socket.on("receiveMessage", (message: Message) => {
         setMessages((prev) => [...prev, message]);
-        console.log(message);
       });
     }
     return () => {
@@ -68,35 +71,57 @@ const Chat = () => {
     }
   }, [messages]);
 
-  const sendMessage = (e: React.FormEvent) => {
+  const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (newMessage.trim() && socket) {
+    if (newMessage.trim() && socket && senderId && recipientId) {
       const messageData: Message = {
-        id: `${Date.now()}`, // or use a proper unique id generator
-        senderId: "CURRENT_USER_ID",
-        recipientId: recipientId || "",
+        id: `${Date.now()}`,
+        senderId: senderId,
+        recipientId: recipientId,
         content: newMessage,
         timestamp: new Date().toISOString(),
       };
 
-      // Emit the message to the server
-      socket.emit(
-        "sendMessage",
-        messageData,
-        (response: { status: string; message: string }) => {
-          if (response.status === "success") {
-            setMessages((prev) => [...prev, messageData]);
-          } else {
-            console.error("Failed to send message:", response.message);
+      try {
+        // Send message to the backend
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}messages/send`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${authContext.tokens}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(messageData),
           }
+        );
+
+        const result = await response.json();
+
+        if (response.ok) {
+          setMessages((prev) => [...prev, result.data]); // Add the saved message to state
+          socket.emit(
+            "sendMessage",
+            messageData,
+            (response: { status: string; message: string }) => {
+              if (response.status === "success") {
+                setMessages((prev) => [...prev, messageData]);
+              } else {
+                console.error("Failed to send message:", response.message);
+              }
+            }
+          );
+        } else {
+          console.error("Failed to send message:", result.message);
         }
-      );
+      } catch (error) {
+        console.error("Error sending message:", error);
+      }
 
       setNewMessage("");
       setShowEmojiPicker(false);
     }
   };
-
   const onEmojiClick = (emojiData: { emoji: string }) => {
     setNewMessage((prev) => prev + emojiData.emoji);
   };
@@ -109,17 +134,15 @@ const Chat = () => {
             <div
               key={message.id}
               className={`flex flex-col space-y-1 ${
-                message.senderId === "CURRENT_USER_ID"
-                  ? "items-end"
-                  : "items-start"
+                message.senderId === senderId ? "items-end" : "items-start"
               }`}
             >
               <span className="text-sm font-medium">
-                {message.senderId === "CURRENT_USER_ID" ? "You" : "Other"}
+                {message.senderId === senderId ? "You" : "Other"}
               </span>
               <div
                 className={`p-3 rounded-lg max-w-[70%] ${
-                  message.senderId === "CURRENT_USER_ID"
+                  message.senderId === senderId
                     ? "bg-primary text-primary-foreground"
                     : "bg-muted"
                 }`}

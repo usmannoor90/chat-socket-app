@@ -8,12 +8,42 @@ import {
 } from "react";
 
 // Types
+export interface ChatSettings {
+  preferences: {
+    [key: string]: string;
+  };
+  rooms: Array<string>;
+  contacts: Array<string>;
+  blockedUsers: Array<string>;
+}
+
+export interface Meta {
+  createdAt: string;
+  lastLogin: string;
+  lastActive: string;
+  isVerified: boolean;
+  accountType: "free" | "premium" | "enterprise";
+}
+
+export interface Profile {
+  avatar: string;
+  status: "online" | "offline" | "away" | "busy";
+  statusMessage?: string;
+  timezone: string;
+}
+
 export interface User {
   id: string;
+  _id: string;
   username: string;
   email: string;
-  avatar?: string;
-  status: "online" | "offline" | "away" | "busy";
+  displayName: string;
+  phoneNumber: string;
+  passwordHash: string;
+  chatSettings: ChatSettings;
+  meta: Meta;
+  profile: Profile;
+  __v: number;
 }
 
 export interface AuthContextType {

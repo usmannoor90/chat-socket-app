@@ -47,7 +47,6 @@ const MainLayout = () => {
   useMemo(async () => {
     if (user) {
       const res = await MessageAPI.getallusrsfor_a_user(auth.tokens);
-      console.log(res);
       setAllContactusers(res);
     }
   }, [user, auth]);

@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import authRoutes from "./src/routes/auth.js";
 import userRoutes from "./src/routes/user.js";
+import messageRoutes from "./src/routes/message.js";
 import connectDB from "./src/lib/db.js";
 import { app, server } from "./src/lib/socket.js";
 import authMiddleware from "./src/middleware/auth.js";
@@ -31,7 +32,7 @@ app.use("/uploads", express.static("uploads"));
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/user", authMiddleware, userRoutes);
-// app.use("/api/messages", messageRoutes);
+app.use("/api/messages/", authMiddleware, messageRoutes);
 
 // const server = createServer(app);
 
