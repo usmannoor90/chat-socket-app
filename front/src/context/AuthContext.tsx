@@ -23,6 +23,7 @@ export interface AuthContextType {
   login: (credentials: LoginCredentials) => Promise<boolean>;
   logout: () => void;
   register: (data: RegisterData) => Promise<boolean>;
+  tokens: string;
 }
 
 export interface LoginCredentials {
@@ -45,11 +46,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [tokens, setTokens] = useState("");
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
       validateToken(token);
+      setTokens(token);
     } else {
       setLoading(false);
     }
@@ -109,6 +112,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         login,
         logout,
         register,
+        tokens,
       }}
     >
       {!loading && children}

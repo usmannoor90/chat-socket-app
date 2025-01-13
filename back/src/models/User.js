@@ -122,6 +122,24 @@ userSchema.methods.comparePassword = async function (candidatePassword) {
   return bcrypt.compare(candidatePassword, this.passwordHash);
 };
 
+// indexes
+userSchema.index({ username: 1 });
+userSchema.index({ displayName: 1 });
+userSchema.index({ "meta.lastActive": -1 });
+userSchema.index({ "profile.status": 1 });
+userSchema.index({ "chatSettings.contacts": 1 });
+
+// Add compound indexes for common queries
+userSchema.index({
+  "chatSettings.contacts": 1,
+  "meta.lastActive": -1,
+});
+
+userSchema.index({
+  username: "text",
+  displayName: "text",
+});
+
 const User = mongoose.model("User", userSchema);
 
 export default User;

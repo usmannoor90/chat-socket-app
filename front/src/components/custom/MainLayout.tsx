@@ -17,7 +17,22 @@ import { Settings, User, LogOut, ArrowRightCircle } from "lucide-react";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import UserMessageCard from "./UserMessageCard";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { MessageAPI } from "@/AxiosInstance/NessageApiLayer";
+
+export interface ContactedUsers {
+  _id: string;
+  displayName: string;
+  username: string;
+  profile: {
+    avatar?: string;
+    status?: string;
+    statusMessage?: string;
+  };
+  meta: {
+    lastActive?: string;
+  };
+}
 
 const MainLayout = () => {
   const auth = useAuth();
@@ -27,16 +42,15 @@ const MainLayout = () => {
 
   const [selectedChat, setSelectedChat] = useState("");
 
-  const sampleUser = {
-    id: "1",
-    name: "John Doe",
-    avatar: "/api/placeholder/32/32",
-    lastMessage: "Hey, how are you doing?",
-    timestamp: "10:30 AM",
-    unreadCount: 3,
-    isOnline: true,
-    isMessageRead: false,
-  };
+  const [allContactusers, setAllContactusers] = useState<ContactedUsers[]>([]);
+
+  useMemo(async () => {
+    if (user) {
+      const res = await MessageAPI.getallusrsfor_a_user(auth.tokens);
+      console.log(res);
+      setAllContactusers(res);
+    }
+  }, [user, auth]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -105,21 +119,19 @@ const MainLayout = () => {
               </Label>
             </form>
             <div className=" space-y-1 py-4 ">
-              {Array.from([1, 2, 3, 4, 5, 8, 52, 56, 47, 55, 53]).map(
-                (_, index) => {
-                  return (
-                    <UserMessageCard
-                      key={index}
-                      user={sampleUser}
-                      isSelected={selectedChat}
-                      onClick={(userId) => {
-                        setSelectedChat(userId);
-                        navigate(`/chat/${userId}`);
-                      }}
-                    />
-                  );
-                }
-              )}
+              {allContactusers.map((item, index) => {
+                return (
+                  <UserMessageCard
+                    key={index}
+                    user={item}
+                    isSelected={selectedChat}
+                    onClick={(userId) => {
+                      setSelectedChat(userId);
+                      navigate(`/chat/${userId}`);
+                    }}
+                  />
+                );
+              })}
             </div>
           </div>
         </div>
@@ -129,7 +141,6 @@ const MainLayout = () => {
           <header className="border-b">
             <div className="flex h-16 items-center "></div>
           </header>
-
           <Outlet />
         </main>
       </div>

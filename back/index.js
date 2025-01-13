@@ -2,9 +2,10 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import authRoutes from "./src/routes/auth.js";
+import userRoutes from "./src/routes/user.js";
 import connectDB from "./src/lib/db.js";
-// import cookieParser from "cookie-parser";
 import { app, server } from "./src/lib/socket.js";
+import authMiddleware from "./src/middleware/auth.js";
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ app.use(
 
 // Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/user", authMiddleware, userRoutes);
 // app.use("/api/messages", messageRoutes);
 
 // const server = createServer(app);

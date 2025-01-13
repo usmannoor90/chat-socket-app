@@ -9,9 +9,10 @@ const authMiddleware = async (req, res, next) => {
       throw createError(401, "Authentication required");
     }
 
-    const decoded = verifyToken(token);
+    const decoded = await verifyToken(token);
 
     req.userId = decoded.userId;
+
     next();
   } catch (error) {
     next(createError(401, "Invalid or expired token"));
