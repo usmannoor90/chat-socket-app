@@ -80,6 +80,7 @@ const Chat = () => {
         recipientId: recipientId,
         content: newMessage,
         timestamp: new Date().toISOString(),
+        
       };
 
       try {
