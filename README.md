@@ -29,7 +29,7 @@ src/
 front/
 ├── src/
 │   ├── components/
-│   │   ├── ui/               # Radix UI components
+│   │   ├── ui/               # Shadcn UI components
 │   │   │   ├── avatar.tsx
 │   │   │   ├── button.tsx
 │   │   │   ├── dialog.tsx
