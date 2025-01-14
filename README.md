@@ -116,21 +116,55 @@ git clone https://github.com/usmannoor90/chat-socket-app.git
 ```
 
 2. Install dependencies:
+   a.
+
+```bash
+cd front
+```
+
+then
 
 ```bash
 npm install
 ```
 
-3. Create a `.env` file in the root directory:
+b.
+
+```bash
+cd back
+```
+
+then
+
+```bash
+npm install
+```
+
+3. Create a `.env` file in the root directory of front and back folder:
+
+a. .env file for back folder
 
 ```env
 JWT_SECRET=your_jwt_secret
 PORT=8000
 MONGO_DB=your_database_url
+```
+
+b. .env file for front folder
+
+```env
 VITE_API_URL=http://localhost:8000/api/
 ```
 
 4. Start the development server:
+
+a. for front
+
+```bash
+npm run dev
+```
+
+b. for back
 
 ```bash
 npm run dev
